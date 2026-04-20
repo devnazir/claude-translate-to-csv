@@ -1,0 +1,36 @@
+{
+  "manifest_version": 3,
+  "name": "Claude Translate to CSV",
+  "version": "2.0.0",
+  "description": "Pick any text elements on a page and instantly translate them into a ready-to-use CSV with English and Indonesian columns..",
+  "permissions": [
+    "contextMenus",
+    "storage",
+    "activeTab",
+    "scripting",
+    "clipboardWrite"
+  ],
+  "host_permissions": [
+    "<all_urls>",
+    "https://api.anthropic.com/*"
+  ],
+  "background": {
+    "service_worker": "background.js"
+  },
+  "content_scripts": [
+    {
+      "matches": ["<all_urls>"],
+      "js": ["content.js"],
+      "css": ["content.css"]
+    }
+  ],
+  "action": {
+    "default_popup": "settings.html",
+    "default_title": "Claude Translate — Settings"
+  },
+  "icons": {
+    "16": "icon.png",
+    "48": "icon.png",
+    "128": "icon.png"
+  }
+}
