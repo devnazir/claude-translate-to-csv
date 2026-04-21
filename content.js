@@ -413,8 +413,20 @@
           });
         }
       } else if (tabId === "json") {
+        const applyPrefixToObj = (obj) => {
+          if (!prefix) return obj;
+          const parts = prefix.split(".").filter(Boolean);
+          const wrap = (inner) =>
+            parts.reduceRight((acc, part) => ({ [part]: acc }), inner);
+          const prefixedSource = wrap(obj.source || {});
+          const prefixedLanguages = {};
+          for (const [lang, data] of Object.entries(obj.languages || {})) {
+            prefixedLanguages[lang] = wrap(data);
+          }
+          return { source: prefixedSource, languages: prefixedLanguages };
+        };
         body.innerHTML = `<textarea class="ct-result-area">${escHtml(
-          JSON.stringify(result, null, 2)
+          JSON.stringify(applyPrefixToObj(result), null, 2)
         )}</textarea>`;
       } else {
         const langName = tabId.replace("lang_", "");
