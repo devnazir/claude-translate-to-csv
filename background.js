@@ -306,12 +306,14 @@ Rules:
 - If the source text is already in one of the target languages, keep it as-is for that language.
 - Translate naturally and professionally.
 - IMPORTANT — detect dynamic runtime values and replace them with {{placeholder}} syntax:
+  * Standalone leading integers or numbers followed by a noun (e.g. "1 branch", "3 tags", "10 commits") — the number MUST become {{count}}: "{{count}} branch", "{{count}} tags", "{{count}} commits"
   * Proper names of people (e.g. "Nazir", "John") → {{name}}
   * Company or organization names (e.g. "NAZIR DEVELOPMENT", "Acme Corp") → {{company}}
-  * Numeric counts or amounts (e.g. "3 items", "100 users") → {{count}} items, {{count}} users
   * Dates or times (e.g. "Monday", "Jan 1 2024") → {{date}}
   * Any other value that is clearly injected at runtime → {{value}}
-  * Apply this to ALL language translations.
+  * Apply this to ALL language translations including the source.
+  * The raw digit must NEVER appear in the output — always replace it with {{count}}.
+  * Example: "1 branch" → "{{count}} branch", "3 tags" → "{{count}} tags", "100 users" → "{{count}} users"
   * Example: "Hello, Nazir 👋" → "Hello, {{name}} 👋"
   * Example: "Overview of NAZIR DEVELOPMENT" → "Overview of {{company}}"`;
 }
