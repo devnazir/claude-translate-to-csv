@@ -5,6 +5,18 @@
   const LANGS = [
     { code: "id", label: "Indonesian", flag: "🇮🇩" },
     { code: "en", label: "English", flag: "🇺🇸" },
+    { code: "ja", label: "Japanese", flag: "🇯🇵" },
+    { code: "ko", label: "Korean", flag: "🇰🇷" },
+    { code: "zh", label: "Chinese", flag: "🇨🇳" },
+    { code: "es", label: "Spanish", flag: "🇪🇸" },
+    { code: "fr", label: "French", flag: "🇫🇷" },
+    { code: "de", label: "German", flag: "🇩🇪" },
+    { code: "ar", label: "Arabic", flag: "🇸🇦" },
+    { code: "ms", label: "Malay", flag: "🇲🇾" },
+    { code: "th", label: "Thai", flag: "🇹🇭" },
+    { code: "vi", label: "Vietnamese", flag: "🇻🇳" },
+    { code: "hi", label: "Hindi", flag: "🇮🇳" },
+    { code: "pt", label: "Portuguese", flag: "🇧🇷" },
   ];
 
   let isPickMode = false;
@@ -19,10 +31,10 @@
     panel.id = "ct-panel";
     panel.innerHTML = `
       <div class="ct-panel-head">
-        <span class="ct-panel-logo">🌐</span>
-        <span class="ct-panel-title">Claude Translate</span>
+        <span class="ct-panel-title">Pickslate</span>
         <button class="ct-panel-close" title="Close">✕</button>
       </div>
+      <div class="ct-provider-badge" id="ct-provider-badge">Loading...</div>
 
       <div class="ct-section-label">1 · Pick mode</div>
       <button class="ct-pick-btn" id="ct-pick-btn">Start clicking elements</button>
@@ -44,7 +56,7 @@
       <div class="ct-divider"></div>
 
       <div class="ct-section-label">3 · Key prefix <span class="ct-optional">(optional)</span></div>
-      <input class="ct-prefix-input" id="ct-prefix-input" type="text" placeholder="e.g. otpVerification or otpVerification.custom" spellcheck="false" />
+      <input class="ct-prefix-input" id="ct-prefix-input" type="text" placeholder="e.g. home or home.custom" spellcheck="false" />
 
       <div class="ct-divider"></div>
 
@@ -53,6 +65,22 @@
       </button>
     `;
     document.body.appendChild(panel);
+
+    chrome.runtime.sendMessage({ type: "GET_SETTINGS" }, (settings) => {
+      const provider = settings?.provider || "anthropic";
+      const badge = panel.querySelector("#ct-provider-badge");
+      if (badge) {
+        if (provider === "github") {
+          badge.textContent = "Using: GitHub Copilot";
+          badge.style.background = "#0d1117";
+          badge.style.color = "#58a6ff";
+        } else {
+          badge.textContent = "Using: Anthropic Claude";
+          badge.style.background = "#2d1810";
+          badge.style.color = "#d4a574";
+        }
+      }
+    });
 
     const langGrid = panel.querySelector("#ct-langs");
 
@@ -163,7 +191,6 @@
     const text = getElText(el);
     if (!text) return;
 
-    // Toggle: if already collected, remove it
     const existing = collectedItems.findIndex((i) => i.el === el);
     if (existing !== -1) {
       collectedItems[existing].el.classList.remove("ct-selected");
@@ -277,11 +304,18 @@
     if (resultModal) resultModal.remove();
 
     const { source, languages } = result;
+    const langNames = Object.keys(languages);
 
     stopPickMode();
     for (const el of document.querySelectorAll(".ct-hover, .ct-selected")) {
       el.classList.remove("ct-hover");
     }
+
+    const tabs = [
+      { id: "csv", label: "CSV" },
+      { id: "json", label: "JSON" },
+      ...langNames.map((l) => ({ id: `lang_${l}`, label: l })),
+    ];
 
     resultModal = document.createElement("div");
     resultModal.id = "ct-result-modal";
@@ -290,7 +324,20 @@
       <div class="ct-modal-box">
         <div class="ct-modal-head">
           <span class="ct-modal-title">Translation Result</span>
-          <button class="ct-modal-close">✕</button>
+          <div class="ct-modal-head-actions">
+            <button class="ct-fullscreen-btn" id="ct-fullscreen-btn" title="Toggle fullscreen">⛶</button>
+            <button class="ct-modal-close" title="Close">✕</button>
+          </div>
+        </div>
+        <div class="ct-modal-tabs" id="ct-modal-tabs">
+          ${tabs
+            .map(
+              (t, i) =>
+                `<button class="ct-tab${i === 0 ? " active" : ""}" data-tab="${
+                  t.id
+                }">${t.label}</button>`
+            )
+            .join("")}
         </div>
         <div class="ct-modal-body" id="ct-modal-body"></div>
         <div class="ct-modal-footer">
@@ -301,6 +348,8 @@
     `;
     document.body.appendChild(resultModal);
 
+    const modalBox = resultModal.querySelector(".ct-modal-box");
+
     resultModal
       .querySelector(".ct-modal-backdrop")
       .addEventListener("click", () => resultModal.remove());
@@ -308,34 +357,83 @@
       .querySelector(".ct-modal-close")
       .addEventListener("click", () => resultModal.remove());
 
-    const body = resultModal.querySelector("#ct-modal-body");
-    body.innerHTML = `
-      <label class="ct-csv-header-opt">
-        <input type="radio" id="ct-csv-include-header" name="ct-csv-header" value="with" checked>
-        <span>Include header row &nbsp;<code>key, en, id</code></span>
-      </label>
-      <label class="ct-csv-header-opt">
-        <input type="radio" id="ct-csv-no-header" name="ct-csv-header" value="without">
-        <span>Without header row</span>
-      </label>
-      <textarea class="ct-result-area" id="ct-csv-area" readonly>${escHtml(
-        buildCSV(source, languages, true, prefix)
-      )}</textarea>
-    `;
-    for (const radio of body.querySelectorAll("input[name='ct-csv-header']")) {
-      radio.addEventListener("change", () => {
-        const withHeader = body.querySelector("#ct-csv-include-header").checked;
-        body.querySelector("#ct-csv-area").value = buildCSV(
-          source,
-          languages,
-          withHeader,
-          prefix
-        );
+    resultModal
+      .querySelector("#ct-fullscreen-btn")
+      .addEventListener("click", () => {
+        modalBox.classList.toggle("ct-fullscreen");
+        const btn = resultModal.querySelector("#ct-fullscreen-btn");
+        btn.textContent = modalBox.classList.contains("ct-fullscreen")
+          ? "⊡"
+          : "⛶";
       });
+
+    let activeTab = "csv";
+
+    function renderTab(tabId) {
+      activeTab = tabId;
+      const body = resultModal.querySelector("#ct-modal-body");
+      for (const t of resultModal.querySelectorAll(".ct-tab")) {
+        t.classList.toggle("active", t.dataset.tab === tabId);
+      }
+
+      if (tabId === "csv") {
+        const langCodes = langNames
+          .map(
+            (l) =>
+              LANGS.find((x) => x.label === l)?.code ||
+              l.toLowerCase().slice(0, 2)
+          )
+          .join(", ");
+        body.innerHTML = `
+          <label class="ct-csv-header-opt">
+            <input type="radio" id="ct-csv-include-header" name="ct-csv-header" value="with" checked>
+            <span>Include header row &nbsp;<code>key, ${langCodes}</code></span>
+          </label>
+          <label class="ct-csv-header-opt">
+            <input type="radio" id="ct-csv-no-header" name="ct-csv-header" value="without">
+            <span>Without header row</span>
+          </label>
+          <textarea class="ct-result-area" id="ct-csv-area">${escHtml(
+            buildCSV(source, languages, true, prefix)
+          )}</textarea>
+        `;
+        for (const radio of body.querySelectorAll(
+          "input[name='ct-csv-header']"
+        )) {
+          radio.addEventListener("change", () => {
+            const withHeader = body.querySelector(
+              "#ct-csv-include-header"
+            ).checked;
+            body.querySelector("#ct-csv-area").value = buildCSV(
+              source,
+              languages,
+              withHeader,
+              prefix
+            );
+          });
+        }
+      } else if (tabId === "json") {
+        body.innerHTML = `<textarea class="ct-result-area">${escHtml(
+          JSON.stringify(result, null, 2)
+        )}</textarea>`;
+      } else {
+        const langName = tabId.replace("lang_", "");
+        const langData = languages[langName] || {};
+        body.innerHTML = `<textarea class="ct-result-area">${escHtml(
+          buildNestedJSON(langData, prefix)
+        )}</textarea>`;
+      }
     }
 
+    resultModal
+      .querySelector("#ct-modal-tabs")
+      .addEventListener("click", (e) => {
+        if (e.target.dataset.tab) renderTab(e.target.dataset.tab);
+      });
+
     resultModal.querySelector("#ct-copy-main").addEventListener("click", () => {
-      const area = resultModal.querySelector("#ct-csv-area");
+      const area = resultModal.querySelector(".ct-result-area");
+      if (!area) return;
       navigator.clipboard.writeText(area.value).then(() => {
         const s = resultModal.querySelector("#ct-copy-status");
         s.textContent = "Copied!";
@@ -344,19 +442,40 @@
         }, 1800);
       });
     });
+
+    renderTab("csv");
+  }
+
+  function buildNestedJSON(data, prefix = "") {
+    if (!prefix) return JSON.stringify(data, null, 2);
+    const parts = prefix.split(".").filter(Boolean);
+    let nested = data;
+    for (let i = parts.length - 1; i >= 0; i--) {
+      nested = { [parts[i]]: nested };
+    }
+    return JSON.stringify(nested, null, 2);
   }
 
   function buildCSV(source, languages, includeHeader = true, prefix = "") {
+    const langNames = Object.keys(languages);
+    const getCode = (label) =>
+      LANGS.find((l) => l.label === label)?.code ||
+      label.toLowerCase().slice(0, 2);
     const keys = Object.keys(source);
     const csvVal = (v) => `"${String(v ?? "").replace(/"/g, '""')}"`;
     const applyPrefix = (key) => (prefix ? `${prefix}.${key}` : key);
     const rows = keys.map((key) => {
-      const en = languages.English?.[key] ?? "";
-      const id = languages.Indonesian?.[key] ?? "";
-      return [csvVal(applyPrefix(key)), csvVal(en), csvVal(id)].join(",");
+      return [
+        csvVal(applyPrefix(key)),
+        ...langNames.map((l) => csvVal(languages[l]?.[key] ?? "")),
+      ].join(",");
     });
     if (includeHeader) {
-      return [`"key","en","id"`, ...rows].join("\n");
+      const header = [
+        csvVal("key"),
+        ...langNames.map((l) => csvVal(getCode(l))),
+      ].join(",");
+      return [header, ...rows].join("\n");
     }
     return rows.join("\n");
   }

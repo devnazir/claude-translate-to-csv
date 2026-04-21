@@ -2,187 +2,562 @@
 <html lang="en">
   <head>
     <meta charset="UTF-8" />
-    <title>Settings</title>
+    <title>Pickslate</title>
     <style>
       * {
         box-sizing: border-box;
         margin: 0;
         padding: 0;
       }
+
       body {
-        width: 280px;
-        padding: 16px;
-        font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+        width: 320px;
+        font-family: -apple-system, BlinkMacSystemFont, "SF Pro Text",
+          "Segoe UI", sans-serif;
         background: #111;
         color: #e0e0e0;
         font-size: 13px;
+        -webkit-font-smoothing: antialiased;
       }
-      h1 {
-        font-size: 14px;
+
+      /* ── Header ── */
+      .titlebar {
+        display: flex;
+        align-items: center;
+        padding: 12px 14px 10px;
+        border-bottom: 1px solid #1e1e1e;
+        user-select: none;
+      }
+      .titlebar-text h1 {
+        font-size: 13px;
         font-weight: 600;
         color: #f0f0f0;
-        margin-bottom: 4px;
+        letter-spacing: -0.01em;
       }
-      p {
+      .titlebar-text p {
         font-size: 11px;
-        color: #555;
-        margin-bottom: 14px;
-        line-height: 1.5;
+        color: #e3e2e2;
+        margin-top: 1px;
+        line-height: 1.4;
       }
-      label {
-        display: block;
+
+      /* ── Section label ── */
+      .section-label {
         font-size: 10px;
         font-weight: 600;
-        color: #555;
+        color: #e3e2e2;
         text-transform: uppercase;
-        letter-spacing: 0.06em;
-        margin-bottom: 6px;
+        letter-spacing: 0.07em;
+        padding: 10px 14px 6px;
+      }
+
+      /* ── Provider grid ── */
+      .section-provider {
+        padding: 0 14px 12px;
+        border-bottom: 1px solid #1e1e1e;
+      }
+      .provider-grid {
+        display: grid;
+        grid-template-columns: 1fr 1fr 1fr;
+        gap: 6px;
+      }
+      .provider-option {
+        position: relative;
+      }
+      .provider-option input[type="radio"] {
+        position: absolute;
+        opacity: 0;
+        width: 0;
+        height: 0;
+      }
+      .provider-option label {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        gap: 5px;
+        padding: 9px 6px 8px;
+        background: #1a1a1a;
+        border: 1px solid #2a2a2a;
+        border-radius: 10px;
+        cursor: pointer;
+        transition: all 0.12s;
+        font-size: 10px;
+        font-weight: 500;
+        color: #e3e2e2;
+        user-select: none;
+      }
+      .provider-option label .plogo {
+        width: 22px;
+        height: 22px;
+        object-fit: contain;
+        border-radius: 4px;
+        opacity: 0.6;
+        transition: opacity 0.12s;
+      }
+      .provider-option label:hover {
+        background: #1e1e1e;
+        border-color: #3a3a3a;
+        color: #aaa;
+      }
+      .provider-option label:hover .plogo {
+        opacity: 0.85;
+      }
+      .provider-option input[type="radio"]:checked + label {
+        background: rgba(10, 132, 255, 0.1);
+        border-color: rgba(10, 132, 255, 0.45);
+        color: #0a84ff;
+      }
+      .provider-option input[type="radio"]:checked + label .plogo {
+        opacity: 1;
+      }
+
+      /* ── Credential section ── */
+      .section-credentials {
+        padding: 6px 14px 12px;
+        border-bottom: 1px solid #1e1e1e;
+      }
+      .credential-section {
+        display: none;
+      }
+      .credential-section.active {
+        display: block;
+      }
+
+      .form-row {
+        margin-bottom: 8px;
+      }
+      .form-label {
+        font-size: 11px;
+        font-weight: 500;
+        color: #e3e2e2;
+        margin-bottom: 5px;
+        display: block;
       }
       .input-wrap {
         position: relative;
-        margin-bottom: 6px;
       }
-      input {
+      input[type="password"],
+      input[type="text"] {
         width: 100%;
-        background: #1a1a1a;
+        background: #0d0d0d;
         border: 1px solid #2a2a2a;
         border-radius: 7px;
-        color: #e0e0e0;
-        font-size: 13px;
-        padding: 8px 56px 8px 10px;
+        color: #d4d4d4;
+        font-size: 12px;
+        padding: 7px 52px 7px 10px;
         outline: none;
         transition: border-color 0.15s;
         font-family: inherit;
       }
-      input:focus {
-        border-color: #f0a500;
+      input[type="password"]::placeholder,
+      input[type="text"]::placeholder {
+        color: #3a3a3a;
       }
+      input[type="password"]:focus,
+      input[type="text"]:focus {
+        border-color: #0a84ff;
+      }
+
       .show-btn {
         position: absolute;
-        right: 8px;
+        right: 7px;
         top: 50%;
         transform: translateY(-50%);
-        background: none;
-        border: none;
-        color: #444;
+        background: #1e1e1e;
+        border: 1px solid #2e2e2e;
+        color: #555;
         cursor: pointer;
-        font-size: 11px;
-        padding: 2px 5px;
+        font-size: 10px;
+        font-weight: 500;
+        padding: 3px 7px;
         border-radius: 4px;
         font-family: inherit;
+        transition: all 0.12s;
       }
       .show-btn:hover {
+        background: #252525;
         color: #aaa;
+        border-color: #3a3a3a;
       }
+
       .hint {
         font-size: 11px;
-        color: #444;
-        margin-bottom: 14px;
+        color: #3a3a3a;
+        margin-top: 5px;
         line-height: 1.5;
       }
       .hint a {
-        color: #f0a500;
+        color: #0a84ff;
         text-decoration: none;
+        opacity: 0.8;
       }
       .hint a:hover {
+        opacity: 1;
         text-decoration: underline;
+      }
+
+      /* ── Actions ── */
+      .actions {
+        padding: 10px 14px 12px;
+        display: flex;
+        flex-direction: column;
+        gap: 6px;
+        border-bottom: 1px solid #1e1e1e;
       }
       .save-btn {
         width: 100%;
         padding: 9px;
         font-size: 13px;
         font-weight: 600;
-        background: #f0a500;
+        background: #0a84ff;
         border: none;
-        border-radius: 7px;
-        color: #111;
+        border-radius: 8px;
+        color: #fff;
         cursor: pointer;
         font-family: inherit;
-        transition: background 0.15s;
+        transition: background 0.15s, transform 0.1s;
+        -webkit-font-smoothing: antialiased;
       }
       .save-btn:hover {
-        background: #ffb820;
+        background: #1a8fff;
+      }
+      .save-btn:active {
+        transform: scale(0.98);
       }
       .save-btn:disabled {
-        background: #555;
+        background: #1e1e1e;
+        color: #333;
         cursor: not-allowed;
+        transform: none;
       }
       .test-btn {
         width: 100%;
         padding: 8px;
         font-size: 12px;
         font-weight: 500;
-        background: none;
+        background: #1a1a1a;
         border: 1px solid #2a2a2a;
-        border-radius: 7px;
-        color: #666;
+        border-radius: 8px;
+        color: #555;
         cursor: pointer;
         font-family: inherit;
         transition: all 0.15s;
-        margin-top: 6px;
       }
       .test-btn:hover {
+        background: #1e1e1e;
         border-color: #3a3a3a;
-        color: #aaa;
+        color: #ccc;
       }
       .test-btn:disabled {
-        opacity: 0.5;
+        opacity: 0.4;
         cursor: not-allowed;
       }
+
       .status {
         text-align: center;
         font-size: 12px;
-        margin-top: 8px;
-        min-height: 16px;
+        min-height: 14px;
         color: #6ec97a;
+        font-weight: 500;
+        padding: 5px 14px 0;
       }
-      .divider {
-        border: none;
-        border-top: 1px solid #1e1e1e;
-        margin: 14px 0;
+
+      /* ── How it works ── */
+      .how-section {
+        padding: 10px 14px 14px;
       }
-      .how {
-        font-size: 11px;
-        color: #444;
-        line-height: 1.7;
+      .how-title {
+        font-size: 10px;
+        font-weight: 600;
+        color: #e3e2e2;
+        text-transform: uppercase;
+        letter-spacing: 0.07em;
+        margin-bottom: 8px;
       }
-      .how b {
-        color: #666;
+      .how-steps {
+        list-style: none;
+        display: flex;
+        flex-direction: column;
+        gap: 6px;
+      }
+      .how-steps li {
+        display: flex;
+        align-items: flex-start;
+        gap: 8px;
+        font-size: 11.5px;
+        color: #e3e2e2;
+        line-height: 1.5;
+      }
+      .how-steps li .step-num {
+        flex-shrink: 0;
+        width: 16px;
+        height: 16px;
+        border-radius: 50%;
+        background: #1a1a1a;
+        border: 1px solid #2a2a2a;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 9px;
+        font-weight: 600;
+        color: #e3e2e2;
+        margin-top: 1px;
       }
     </style>
   </head>
   <body>
-    <h1>🌐 Claude Translate</h1>
-    <p>Collect text from any page, translate all at once, export to Excel.</p>
-
-    <label>Anthropic API Key</label>
-    <div class="input-wrap">
-      <input
-        type="password"
-        id="key"
-        placeholder="sk-ant-api03-…"
-        autocomplete="off"
-      />
-      <button class="show-btn" id="show">Show</button>
-    </div>
-    <div class="hint">
-      Get your key at
-      <a href="https://console.anthropic.com" target="_blank"
-        >console.anthropic.com</a
-      >
+    <!-- Header -->
+    <div class="titlebar">
+      <div class="titlebar-text">
+        <h1>Pickslate</h1>
+        <p>AI-powered web text translator</p>
+      </div>
     </div>
 
-    <button class="save-btn" id="save">Save</button>
-    <button class="test-btn" id="test">Test key</button>
+    <!-- Provider picker -->
+    <div class="section-label">AI Provider</div>
+    <div class="section-provider">
+      <div class="provider-grid">
+        <div class="provider-option">
+          <input
+            type="radio"
+            name="provider"
+            id="provider-anthropic"
+            value="anthropic"
+            checked
+          />
+          <label for="provider-anthropic">
+            <img class="plogo" src="logos/anthropic.png" alt="Anthropic" />
+            Anthropic
+          </label>
+        </div>
+        <div class="provider-option">
+          <input
+            type="radio"
+            name="provider"
+            id="provider-openai"
+            value="openai"
+          />
+          <label for="provider-openai">
+            <img class="plogo" src="logos/open-ai.png" alt="OpenAI" />
+            OpenAI
+          </label>
+        </div>
+        <div class="provider-option">
+          <input
+            type="radio"
+            name="provider"
+            id="provider-gemini"
+            value="gemini"
+          />
+          <label for="provider-gemini">
+            <img class="plogo" src="logos/gemini.png" alt="Gemini" />
+            Gemini
+          </label>
+        </div>
+        <div class="provider-option">
+          <input type="radio" name="provider" id="provider-groq" value="groq" />
+          <label for="provider-groq">
+            <img class="plogo" src="logos/grok.png" alt="Groq" />
+            Groq
+          </label>
+        </div>
+        <div class="provider-option">
+          <input
+            type="radio"
+            name="provider"
+            id="provider-openrouter"
+            value="openrouter"
+          />
+          <label for="provider-openrouter">
+            <img class="plogo" src="logos/openrouter.png" alt="OpenRouter" />
+            OpenRouter
+          </label>
+        </div>
+        <div class="provider-option">
+          <input
+            type="radio"
+            name="provider"
+            id="provider-github"
+            value="github"
+          />
+          <label for="provider-github">
+            <img class="plogo" src="logos/github.png" alt="GitHub" />
+            GitHub
+          </label>
+        </div>
+      </div>
+    </div>
+
+    <!-- Credential sections -->
+    <div class="section-label">API Credentials</div>
+    <div class="section-credentials">
+      <div class="credential-section active" id="anthropic-section">
+        <div class="form-row">
+          <span class="form-label">API Key</span>
+          <div class="input-wrap">
+            <input
+              type="password"
+              id="anthropic-key"
+              placeholder="sk-ant-api03-…"
+              autocomplete="off"
+            />
+            <button class="show-btn" id="show-anthropic">Show</button>
+          </div>
+          <div class="hint">
+            →
+            <a href="https://console.anthropic.com" target="_blank"
+              >console.anthropic.com</a
+            >
+          </div>
+        </div>
+      </div>
+
+      <div class="credential-section" id="openai-section">
+        <div class="form-row">
+          <span class="form-label">API Key</span>
+          <div class="input-wrap">
+            <input
+              type="password"
+              id="openai-key"
+              placeholder="sk-…"
+              autocomplete="off"
+            />
+            <button class="show-btn" id="show-openai">Show</button>
+          </div>
+          <div class="hint">
+            →
+            <a href="https://platform.openai.com/api-keys" target="_blank"
+              >platform.openai.com/api-keys</a
+            >
+          </div>
+        </div>
+      </div>
+
+      <div class="credential-section" id="gemini-section">
+        <div class="form-row">
+          <span class="form-label">API Key</span>
+          <div class="input-wrap">
+            <input
+              type="password"
+              id="gemini-key"
+              placeholder="AIza…"
+              autocomplete="off"
+            />
+            <button class="show-btn" id="show-gemini">Show</button>
+          </div>
+          <div class="hint">
+            →
+            <a href="https://aistudio.google.com/app/apikey" target="_blank"
+              >aistudio.google.com</a
+            >
+          </div>
+        </div>
+      </div>
+
+      <div class="credential-section" id="groq-section">
+        <div class="form-row">
+          <span class="form-label">API Key</span>
+          <div class="input-wrap">
+            <input
+              type="password"
+              id="groq-key"
+              placeholder="gsk_…"
+              autocomplete="off"
+            />
+            <button class="show-btn" id="show-groq">Show</button>
+          </div>
+          <div class="hint">
+            →
+            <a href="https://console.groq.com/keys" target="_blank"
+              >console.groq.com/keys</a
+            >
+          </div>
+        </div>
+      </div>
+
+      <div class="credential-section" id="openrouter-section">
+        <div class="form-row">
+          <span class="form-label">API Key</span>
+          <div class="input-wrap">
+            <input
+              type="password"
+              id="openrouter-key"
+              placeholder="sk-or-…"
+              autocomplete="off"
+            />
+            <button class="show-btn" id="show-openrouter">Show</button>
+          </div>
+          <div class="hint">
+            →
+            <a href="https://openrouter.ai/keys" target="_blank"
+              >openrouter.ai/keys</a
+            >
+          </div>
+        </div>
+      </div>
+
+      <div class="credential-section" id="github-section">
+        <div class="form-row">
+          <span class="form-label">Personal Access Token</span>
+          <div class="input-wrap">
+            <input
+              type="password"
+              id="github-token"
+              placeholder="ghp_… or github_pat_…"
+              autocomplete="off"
+            />
+            <button class="show-btn" id="show-github">Show</button>
+          </div>
+          <div class="hint">
+            →
+            <a
+              href="https://github.com/settings/tokens?type=beta"
+              target="_blank"
+              >github.com/settings/tokens</a
+            >
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Actions -->
+    <div class="actions">
+      <button class="save-btn" id="save">Save Settings</button>
+      <button class="test-btn" id="test">Test Connection</button>
+    </div>
     <div class="status" id="status"></div>
 
-    <div class="divider"></div>
-    <div class="how">
-      <b>How it works:</b><br />
-      1. The panel opens on every page<br />
-      2. Click "Start picking" → click any elements<br />
-      3. Pick your target languages<br />
-      4. Hit <b>Translate</b> → get CSV for Excel
+    <!-- How it works -->
+    <div class="how-section">
+      <div class="how-title">How it works</div>
+      <ul class="how-steps">
+        <li>
+          <span class="step-num">1</span>Select an AI provider above and save
+          your API key
+        </li>
+        <li>
+          <span class="step-num">2</span>Open any webpage — the Pickslate panel
+          appears automatically
+        </li>
+        <li>
+          <span class="step-num">3</span>Click "Start picking" and select text
+          elements on the page
+        </li>
+        <li>
+          <span class="step-num">4</span>Choose target languages (up to 14) and
+          set a key prefix
+        </li>
+        <li>
+          <span class="step-num">5</span>Hit Translate — results appear in CSV,
+          JSON, or per-language tabs
+        </li>
+        <li>
+          <span class="step-num">6</span>Edit results inline, then copy or
+          expand to fullscreen
+        </li>
+      </ul>
     </div>
 
     <script src="settings.js"></script>

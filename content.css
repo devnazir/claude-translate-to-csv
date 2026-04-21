@@ -3,15 +3,15 @@ body.ct-pick-active * {
 }
 
 .ct-hover {
-  outline: 2px dashed #f0a500 !important;
+  outline: 2px dashed #0a84ff !important;
   outline-offset: 2px !important;
-  background: rgba(240, 165, 0, 0.08) !important;
+  background: rgba(10, 132, 255, 0.08) !important;
 }
 
 .ct-selected {
-  outline: 2px solid #f0a500 !important;
+  outline: 2px solid #0a84ff !important;
   outline-offset: 2px !important;
-  background: rgba(240, 165, 0, 0.13) !important;
+  background: rgba(10, 132, 255, 0.13) !important;
 }
 
 #ct-panel {
@@ -66,25 +66,38 @@ body.ct-pick-active * {
   background: #222;
 }
 
+.ct-provider-badge {
+  padding: 4px 14px;
+  font-size: 10px;
+  font-weight: 600;
+  text-align: center;
+  border-radius: 6px;
+  margin: 8px 14px 2px;
+  background: rgba(10, 132, 255, 0.1);
+  color: #0a84ff;
+  letter-spacing: 0.02em;
+  border: 1px solid rgba(10, 132, 255, 0.25);
+}
+
 .ct-section-label {
   font-size: 10px;
   font-weight: 600;
-  color: #555;
+  color: #e3e2e2;
   text-transform: uppercase;
   letter-spacing: 0.07em;
-  padding: 10px 14px 4px;
+  padding: 8px 14px 4px;
 }
 
 .ct-section-label span {
   font-weight: 400;
   text-transform: none;
-  color: #666;
+  color: #888;
 }
 
 .ct-optional {
   font-weight: 400;
   text-transform: none;
-  color: #444;
+  color: #555;
   font-size: 9px;
 }
 
@@ -107,7 +120,7 @@ body.ct-pick-active * {
   color: #3a3a3a;
 }
 .ct-prefix-input:focus {
-  border-color: #f0a500;
+  border-color: #0a84ff;
 }
 
 .ct-pick-btn {
@@ -115,50 +128,50 @@ body.ct-pick-active * {
   width: calc(100% - 28px);
   margin: 0 14px;
   padding: 8px 12px;
-  font-size: 13px;
+  font-size: 12px;
   font-weight: 500;
-  background: #1e1e1e;
-  border: 1px solid #2e2e2e;
+  background: #1a1a1a;
+  border: 1px solid #2a2a2a;
   border-radius: 8px;
-  color: #ccc;
+  color: #555;
   cursor: pointer;
   transition: background 0.15s, border-color 0.15s, color 0.15s;
   font-family: inherit;
   text-align: left;
 }
 .ct-pick-btn:hover {
-  background: #252525;
+  background: #1e1e1e;
   border-color: #3a3a3a;
-  color: #f0f0f0;
+  color: #ccc;
 }
 .ct-pick-btn.active {
-  background: rgba(240, 165, 0, 0.12);
-  border-color: #f0a500;
-  color: #f0a500;
+  background: rgba(10, 132, 255, 0.1);
+  border-color: rgba(10, 132, 255, 0.45);
+  color: #0a84ff;
 }
 .ct-pick-hint {
   font-size: 11px;
-  color: #444;
-  padding: 5px 14px 0;
+  color: #555;
+  padding: 3px 14px 0;
   line-height: 1.5;
 }
 
 .ct-divider {
   border: none;
   border-top: 1px solid #1a1a1a;
-  margin: 10px 0;
+  margin: 8px 0;
 }
 
 .ct-items {
   margin: 0 14px;
-  max-height: 160px;
+  max-height: 130px;
   overflow-y: auto;
   scrollbar-width: thin;
   scrollbar-color: #2a2a2a transparent;
 }
 .ct-empty {
   font-size: 12px;
-  color: #3a3a3a;
+  color: #444;
   padding: 6px 0;
 }
 .ct-item-row {
@@ -175,8 +188,9 @@ body.ct-pick-active * {
   width: 18px;
   height: 18px;
   border-radius: 50%;
-  background: #222;
-  color: #666;
+  background: #1a1a1a;
+  border: 1px solid #2a2a2a;
+  color: #e3e2e2;
   font-size: 10px;
   display: flex;
   align-items: center;
@@ -209,10 +223,10 @@ body.ct-pick-active * {
 }
 
 .ct-clear-btn {
-  margin: 6px 14px 0;
+  margin: 4px 14px 0;
   background: none;
   border: none;
-  color: #3a3a3a;
+  color: #444;
   font-size: 11px;
   cursor: pointer;
   padding: 0;
@@ -226,7 +240,7 @@ body.ct-pick-active * {
 .ct-langs {
   display: flex;
   flex-wrap: wrap;
-  gap: 5px;
+  gap: 4px;
   padding: 0 14px;
 }
 .ct-lang-chip {
@@ -246,28 +260,29 @@ body.ct-pick-active * {
   color: #aaa;
 }
 .ct-lang-chip.active {
-  background: rgba(240, 165, 0, 0.12);
-  border-color: #f0a500;
-  color: #f0a500;
+  background: rgba(10, 132, 255, 0.1);
+  border-color: rgba(10, 132, 255, 0.45);
+  color: #0a84ff;
 }
 
 .ct-translate-btn {
   display: block;
   width: calc(100% - 28px);
-  margin: 4px 14px 14px;
-  padding: 10px;
+  margin: 4px 14px 10px;
+  padding: 9px;
   font-size: 13px;
   font-weight: 600;
-  background: #f0a500;
+  background: #0a84ff;
   border: none;
-  border-radius: 9px;
-  color: #111;
+  border-radius: 8px;
+  color: #fff;
   cursor: pointer;
   transition: background 0.15s, transform 0.1s;
   font-family: inherit;
+  -webkit-font-smoothing: antialiased;
 }
 .ct-translate-btn:hover:not(:disabled) {
-  background: #ffb820;
+  background: #1a8fff;
 }
 .ct-translate-btn:active:not(:disabled) {
   transform: scale(0.98);
@@ -317,6 +332,26 @@ body.ct-pick-active * {
   font-weight: 600;
   color: #f0f0f0;
 }
+.ct-modal-head-actions {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+}
+.ct-fullscreen-btn {
+  background: none;
+  border: none;
+  color: #555;
+  cursor: pointer;
+  font-size: 15px;
+  padding: 3px 6px;
+  border-radius: 5px;
+  transition: color 0.1s, background 0.1s;
+  line-height: 1;
+}
+.ct-fullscreen-btn:hover {
+  color: #eee;
+  background: #222;
+}
 .ct-modal-close {
   background: none;
   border: none;
@@ -330,6 +365,15 @@ body.ct-pick-active * {
 .ct-modal-close:hover {
   color: #eee;
   background: #222;
+}
+
+.ct-modal-box.ct-fullscreen {
+  width: 100vw !important;
+  max-width: 100vw !important;
+  height: 100vh !important;
+  max-height: 100vh !important;
+  border-radius: 0 !important;
+  border: none !important;
 }
 
 .ct-modal-tabs {
@@ -398,7 +442,7 @@ body.ct-pick-active * {
   padding: 2px 0;
 }
 .ct-csv-header-opt input[type="radio"] {
-  accent-color: #f0a500;
+  accent-color: #0a84ff;
   cursor: pointer;
   width: 14px;
   height: 14px;
@@ -410,7 +454,7 @@ body.ct-pick-active * {
   border: 1px solid #2a2a2a;
   border-radius: 4px;
   padding: 1px 5px;
-  color: #f0a500;
+  color: #0a84ff;
 }
 
 .ct-modal-footer {
