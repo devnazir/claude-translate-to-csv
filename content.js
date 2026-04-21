@@ -300,10 +300,15 @@
     );
   }
 
-  function showResultModal(result, prefix = "") {
+  function showResultModal(initialResult, initialPrefix = "") {
     if (resultModal) resultModal.remove();
 
-    const { source, languages } = result;
+    let result = initialResult;
+    let prefix = initialPrefix;
+    const source = { ...result.source };
+    const languages = Object.fromEntries(
+      Object.entries(result.languages || {}).map(([l, d]) => [l, { ...d }])
+    );
     const langNames = Object.keys(languages);
 
     stopPickMode();
@@ -339,6 +344,12 @@
             )
             .join("")}
         </div>
+        <div class="ct-modal-prefix-row" id="ct-modal-prefix-row">
+          <label class="ct-modal-prefix-label" for="ct-modal-prefix-input">Prefix</label>
+          <input class="ct-modal-prefix-input" id="ct-modal-prefix-input" type="text" value="${escAttr(
+            prefix
+          )}" placeholder="e.g. home or home.custom" spellcheck="false" />
+        </div>
         <div class="ct-modal-body" id="ct-modal-body"></div>
         <div class="ct-modal-footer">
           <button class="ct-copy-btn" id="ct-copy-main">Copy to clipboard</button>
@@ -368,6 +379,40 @@
       });
 
     let activeTab = "csv";
+
+    resultModal
+      .querySelector("#ct-modal-prefix-input")
+      .addEventListener("change", (e) => {
+        prefix = e.target.value.trim();
+        renderTab(activeTab);
+      });
+
+    function detectKeyRename(oldKeys, newKeys) {
+      const removed = oldKeys.filter((k) => !newKeys.includes(k));
+      const added = newKeys.filter((k) => !oldKeys.includes(k));
+      if (removed.length === 1 && added.length === 1) {
+        return { from: removed[0], to: added[0] };
+      }
+      return null;
+    }
+
+    function applyRenameAcrossAll(rename) {
+      if (!rename) return;
+      const newSource = {};
+      for (const k of Object.keys(source)) {
+        newSource[k === rename.from ? rename.to : k] = source[k];
+      }
+      for (const k of Object.keys(source)) delete source[k];
+      Object.assign(source, newSource);
+
+      for (const lang of Object.keys(languages)) {
+        const newLang = {};
+        for (const k of Object.keys(languages[lang])) {
+          newLang[k === rename.from ? rename.to : k] = languages[lang][k];
+        }
+        languages[lang] = newLang;
+      }
+    }
 
     function renderTab(tabId) {
       activeTab = tabId;
@@ -432,9 +477,28 @@
         const langName = tabId.replace("lang_", "");
         const langData = languages[langName] || {};
         body.innerHTML = `<textarea class="ct-result-area">${escHtml(
-          buildNestedJSON(langData, prefix)
+          JSON.stringify(langData, null, 2)
         )}</textarea>`;
       }
+
+      resultModal
+        .querySelector(".ct-result-area")
+        ?.addEventListener("change", (e) => {
+          try {
+            if (tabId !== "csv" && tabId !== "json") {
+              const langName = tabId.replace("lang_", "");
+              const newLangData = JSON.parse(e.target.value);
+              const oldKeys = Object.keys(source);
+              const newKeys = Object.keys(newLangData);
+              const rename = detectKeyRename(oldKeys, newKeys);
+              if (rename) applyRenameAcrossAll(rename);
+              languages[langName] = newLangData;
+              result = { source, languages };
+            }
+          } catch (_) {
+            // ignore parse errors while user is still editing
+          }
+        });
     }
 
     resultModal
@@ -446,7 +510,17 @@
     resultModal.querySelector("#ct-copy-main").addEventListener("click", () => {
       const area = resultModal.querySelector(".ct-result-area");
       if (!area) return;
-      navigator.clipboard.writeText(area.value).then(() => {
+      let textToCopy = area.value;
+      // For per-language tabs with a prefix, wrap the flat data with the prefix before copying
+      if (activeTab !== "csv" && activeTab !== "json" && prefix) {
+        try {
+          const flat = JSON.parse(area.value);
+          textToCopy = buildNestedJSON(flat, prefix);
+        } catch (_) {
+          // if invalid JSON, fall back to raw textarea value
+        }
+      }
+      navigator.clipboard.writeText(textToCopy).then(() => {
         const s = resultModal.querySelector("#ct-copy-status");
         s.textContent = "Copied!";
         setTimeout(() => {

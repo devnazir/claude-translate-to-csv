@@ -406,6 +406,34 @@ body.ct-pick-active * {
   color: #f0f0f0;
 }
 
+.ct-modal-prefix-row {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 6px 12px;
+  border-bottom: 1px solid #1e1e1e;
+  flex-shrink: 0;
+}
+.ct-modal-prefix-label {
+  font-size: 11px;
+  color: #666;
+  white-space: nowrap;
+}
+.ct-modal-prefix-input {
+  flex: 1;
+  background: #111;
+  border: 1px solid #2a2a2a;
+  border-radius: 5px;
+  color: #ccc;
+  font-size: 12px;
+  font-family: "SF Mono", "Fira Code", "Consolas", monospace;
+  padding: 3px 8px;
+  outline: none;
+}
+.ct-modal-prefix-input:focus {
+  border-color: #444;
+}
+
 .ct-modal-body {
   flex: 1;
   overflow: hidden;
@@ -448,6 +476,22 @@ body.ct-pick-active * {
   height: 14px;
 }
 .ct-csv-header-opt code {
+  font-family: "SF Mono", "Fira Code", "Consolas", monospace;
+  font-size: 11px;
+  background: #1a1a1a;
+  border: 1px solid #2a2a2a;
+  border-radius: 4px;
+  padding: 1px 5px;
+  color: #0a84ff;
+}
+
+.ct-prefix-label {
+  font-size: 11px;
+  color: #888;
+  padding: 6px 2px 4px;
+}
+
+.ct-prefix-label code {
   font-family: "SF Mono", "Fira Code", "Consolas", monospace;
   font-size: 11px;
   background: #1a1a1a;
