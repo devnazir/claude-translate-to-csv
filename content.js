@@ -387,20 +387,25 @@
         renderTab(activeTab);
       });
 
-    function detectKeyRename(oldKeys, newKeys) {
+    function detectKeyRenames(oldKeys, newKeys) {
       const removed = oldKeys.filter((k) => !newKeys.includes(k));
       const added = newKeys.filter((k) => !oldKeys.includes(k));
-      if (removed.length === 1 && added.length === 1) {
-        return { from: removed[0], to: added[0] };
+
+      const renames = [];
+      const count = Math.min(removed.length, added.length);
+      for (let i = 0; i < count; i++) {
+        renames.push({ from: removed[i], to: added[i] });
       }
-      return null;
+      return renames;
     }
 
-    function applyRenameAcrossAll(rename) {
-      if (!rename) return;
+    function applyRenamesAcrossAll(renames) {
+      if (!renames.length) return;
+      const renameMap = Object.fromEntries(renames.map((r) => [r.from, r.to]));
+
       const newSource = {};
       for (const k of Object.keys(source)) {
-        newSource[k === rename.from ? rename.to : k] = source[k];
+        newSource[renameMap[k] ?? k] = source[k];
       }
       for (const k of Object.keys(source)) delete source[k];
       Object.assign(source, newSource);
@@ -408,7 +413,7 @@
       for (const lang of Object.keys(languages)) {
         const newLang = {};
         for (const k of Object.keys(languages[lang])) {
-          newLang[k === rename.from ? rename.to : k] = languages[lang][k];
+          newLang[renameMap[k] ?? k] = languages[lang][k];
         }
         languages[lang] = newLang;
       }
@@ -490,8 +495,8 @@
               const newLangData = JSON.parse(e.target.value);
               const oldKeys = Object.keys(source);
               const newKeys = Object.keys(newLangData);
-              const rename = detectKeyRename(oldKeys, newKeys);
-              if (rename) applyRenameAcrossAll(rename);
+              const renames = detectKeyRenames(oldKeys, newKeys);
+              if (renames.length) applyRenamesAcrossAll(renames);
               languages[langName] = newLangData;
               result = { source, languages };
             }
