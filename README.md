@@ -4,7 +4,10 @@
 
 A Chrome extension that lets you pick any text elements on a webpage and instantly translate them into multiple languages — powered by your choice of AI provider (Anthropic, OpenAI, Gemini, Groq, OpenRouter, or GitHub Copilot). Export results as CSV or JSON, ready for your localization workflow.
 
-https://github.com/user-attachments/assets/b185eca6-6a14-4b4f-848e-791d264ccc5a
+
+
+https://github.com/user-attachments/assets/e7810e3e-be51-4f65-b2ee-f4c6a58cd52f
+
 
 ---
 
